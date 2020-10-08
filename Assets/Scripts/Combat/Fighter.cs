@@ -11,10 +11,17 @@ namespace RPG.Combat
     {
         [SerializeField] float weaponRange = 2f;
 
+        [SerializeField] float timebetweenattacks = 1f;
+        
         Transform target;
+        private float timeSinceLastAttack = 0;
+        
         Mover _mover;
         Animator _animator;
         ActionScheduler _actionScheduler;
+        
+        
+        
 
         private void Start()
         {
@@ -26,7 +33,7 @@ namespace RPG.Combat
         private void Update()
         {
             //transform.position is the current position of character
-
+            timeSinceLastAttack += Time.deltaTime;
             if (target == null) return; //no target
 
             if (!GetIsInRange())
@@ -43,7 +50,12 @@ namespace RPG.Combat
 
         private void AttackBehaviour()
         {
-            _animator.SetTrigger("attack");
+            if (timeSinceLastAttack > timebetweenattacks)
+            {
+                _animator.SetTrigger("attack");
+                timeSinceLastAttack = 0;
+            }
+            
             //expand to apply damage and stuff
         }
 
@@ -56,11 +68,14 @@ namespace RPG.Combat
 
         public void Attack(CombatTarget combatTarget)
         {
+            
+            
+             
             _actionScheduler.StartAction(this);
-
+            
             target = combatTarget.transform;
             
-            Debug.Log("hahaha poopie ");
+            
         }
 
         public void Cancel()
